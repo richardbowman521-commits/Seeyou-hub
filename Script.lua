@@ -24,7 +24,7 @@ Title.Parent = TopBar
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0.03, 0, 0, 0)
 Title.Size = UDim2.new(0, 300, 0, 35)
-Title.Text = "SEEYOU HUB v10.4"
+Title.Text = "SEEYOU HUB v10.5"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.Font = Enum.Font.SourceSansBold
@@ -89,7 +89,7 @@ Tab2Btn.MouseButton1Click:Connect(function()
     PlayersTab.Visible = true
 end)
 
--- 1. خێرایی
+-- ==================== CHARACTER TAB ====================
 local SpeedInput = Instance.new("TextBox")
 SpeedInput.Parent = CharacterTab
 SpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -111,15 +111,9 @@ SetSpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 local customSpeed = nil
 SetSpeedButton.MouseButton1Click:Connect(function()
     local speedValue = tonumber(SpeedInput.Text)
-    if speedValue then
-        customSpeed = speedValue
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid.WalkSpeed = speedValue
-        end
-    end
+    if speedValue then customSpeed = speedValue end
 end)
 
--- 2. بازدان
 local JumpInput = Instance.new("TextBox")
 JumpInput.Parent = CharacterTab
 JumpInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -141,18 +135,9 @@ SetJumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 local customJump = nil
 SetJumpButton.MouseButton1Click:Connect(function()
     local jumpValue = tonumber(JumpInput.Text)
-    if jumpValue then
-        customJump = jumpValue
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            local hum = player.Character.Humanoid
-            hum.UseJumpPower = false
-            hum.JumpHeight = jumpValue
-            hum.JumpPower = jumpValue * 7
-        end
-    end
+    if jumpValue then customJump = jumpValue end
 end)
 
--- 3. فڕین
 local FlyInput = Instance.new("TextBox")
 FlyInput.Parent = CharacterTab
 FlyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -181,7 +166,6 @@ FlyButton.MouseButton1Click:Connect(function()
             bv = Instance.new("BodyVelocity")
             bv.Parent = player.Character.HumanoidRootPart
             bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-            
             spawn(function()
                 while flying and player.Character and player.Character:FindFirstChild("HumanoidRootPart") do
                     local flySpeed = tonumber(FlyInput.Text) or 2
@@ -197,7 +181,6 @@ FlyButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- 4. چاککرنا بنەڕەتی یا Shift Lock (سیستەمێ فەرمی و سۆک یێ ڕۆبلۆکس)
 local ShiftLockButton = Instance.new("TextButton")
 ShiftLockButton.Parent = CharacterTab
 ShiftLockButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
@@ -208,8 +191,6 @@ ShiftLockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ShiftLockButton.TextSize = 13
 
 local shiftLockEnabled = false
-
--- دروستکردنا نیشانەکا بچووک (Crosshair) بۆ ناڤەڕاستا شاشێ کاتێ لۆک دبیت
 local CenterDot = Instance.new("Frame")
 CenterDot.Size = UDim2.new(0, 6, 0, 6)
 CenterDot.Position = UDim2.new(0.5, -3, 0.5, -3)
@@ -224,8 +205,6 @@ ShiftLockButton.MouseButton1Click:Connect(function()
         shiftLockEnabled = true
         ShiftLockButton.Text = "Shift Lock: ON"
         CenterDot.Visible = true
-        
-        -- بەکارئینانا سیستەمێ فەرمی یێ MouseLock یێ ڕۆبلۆکس بۆ لڤینا سۆک
         pcall(function()
             player.DevEnableMouseLock = true
             game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.LockCenter
@@ -242,7 +221,6 @@ ShiftLockButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- ٥. غەیبکرن
 local InvisibilityButton = Instance.new("TextButton")
 InvisibilityButton.Parent = CharacterTab
 InvisibilityButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
@@ -263,33 +241,7 @@ InvisibilityButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- لۆپ بۆ پاراستنا خێرایی، بازدان، و ئاڕاستەیا کاراکتەری دگەل کامێرێ
-game:GetService("RunService").RenderStepped:Connect(function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        local hum = player.Character.Humanoid
-        if customSpeed then hum.WalkSpeed = customSpeed end
-        if customJump then
-            hum.UseJumpPower = false
-            hum.JumpHeight = customJump
-        end
-        
-        -- ئەگەر Shift Lock کارا بوو، دێ کاراکتەری ل سەر ئاڕاستەیا کامێرێ ڕێک ئێخیت ب کەیفا تە بێ لۆک کرنا زوومێ
-        if shiftLockEnabled and player.Character:FindFirstChild("HumanoidRootPart") then
-            local camera = workspace.CurrentCamera
-            local rootPart = player.Character.HumanoidRootPart
-            local lookVector = camera.CFrame.LookVector
-            
-            -- سوڕاندنا کاراکتەری بەرەڤ جهێ کامێرێ سەیڕ دکەت، بەس ڕێ ددت کامێرە زووم ببیت
-            local targetRotation = math.atan2(-lookVector.X, -lookVector.Z)
-            rootPart.CFrame = CFrame.new(rootPart.Position) * CFrame.Angles(0, targetRotation, 0)
-            
-            -- پاراستنا زوومێ و سۆکییا کامێرێ
-            camera.CameraType = Enum.CameraType.Custom
-        end
-    end
-end)
-
--- بەشێ Players Target
+-- ==================== PLAYERS TARGET TAB ====================
 local TargetBox = Instance.new("TextBox")
 TargetBox.Parent = PlayersTab
 TargetBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -303,8 +255,8 @@ TargetBox.ClearTextOnFocus = true
 local TeleportButton = Instance.new("TextButton")
 TeleportButton.Parent = PlayersTab
 TeleportButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-TeleportButton.Position = UDim2.new(0.05, 0, 0.25, 0)
-TeleportButton.Size = UDim2.new(0, 150, 0, 40)
+TeleportButton.Position = UDim2.new(0.05, 0, 0.23, 0)
+TeleportButton.Size = UDim2.new(0, 150, 0, 35)
 TeleportButton.Text = "Teleport To"
 TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -323,8 +275,8 @@ end)
 local SpectateButton = Instance.new("TextButton")
 SpectateButton.Parent = PlayersTab
 SpectateButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-SpectateButton.Position = UDim2.new(0.52, 0, 0.25, 0)
-SpectateButton.Size = UDim2.new(0, 150, 0, 40)
+SpectateButton.Position = UDim2.new(0.52, 0, 0.23, 0)
+SpectateButton.Size = UDim2.new(0, 150, 0, 35)
 SpectateButton.Text = "Spectate Player"
 SpectateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -347,5 +299,83 @@ SpectateButton.MouseButton1Click:Connect(function()
         end
         spectating = false
         SpectateButton.Text = "Spectate Player"
+    end
+end)
+
+-- لڤاندنا دوگمەیێن Bang و Unbang بۆ ناڤ مێنیوێ
+local BangButton = Instance.new("TextButton")
+BangButton.Parent = PlayersTab
+BangButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0) -- ڕەنگێ سۆر
+BangButton.Position = UDim2.new(0.05, 0, 0.42, 0)
+BangButton.Size = UDim2.new(0, 150, 0, 35)
+BangButton.Text = "Bang Player"
+BangButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local UnbangButton = Instance.new("TextButton")
+UnbangButton.Parent = PlayersTab
+UnbangButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+UnbangButton.Position = UDim2.new(0.52, 0, 0.42, 0)
+UnbangButton.Size = UDim2.new(0, 150, 0, 35)
+UnbangButton.Text = "Unbang"
+UnbangButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local bamping = false
+local bangTarget = nil
+
+BangButton.MouseButton1Click:Connect(function()
+    local targetName = TargetBox.Text:lower()
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p.Name:lower():sub(1, #targetName) == targetName and p ~= player then
+            bangTarget = p
+            bamping = true
+            break
+        end
+    end
+end)
+
+UnbangButton.MouseButton1Click:Connect(function()
+    bamping = false
+    bangTarget = nil
+end)
+
+-- ==================== LOOPS SYSTEM ====================
+local bangState = true
+game:GetService("RunService").RenderStepped:Connect(function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        local hum = player.Character.Humanoid
+        if customSpeed then hum.WalkSpeed = customSpeed end
+        if customJump then
+            hum.UseJumpPower = false
+            hum.JumpHeight = customJump
+        end
+        
+        -- سیستەمێ تێکدانا کاراکتەری (Bang Loop)
+        if bamping and bangTarget and bangTarget.Character and bangTarget.Character:FindFirstChild("HumanoidRootPart") then
+            local root = player.Character:FindFirstChild("HumanoidRootPart")
+            local targetRoot = bangTarget.Character.HumanoidRootPart
+            if root then
+                hum.PlatformStand = true
+                if bangState then
+                    root.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 0.75)
+                else
+                    root.CFrame = targetRoot.CFrame * CFrame.new(0, 0, -0.5)
+                end
+                bangState = not bangState
+            end
+        else
+            if hum.PlatformStand and not bamping then
+                hum.PlatformStand = false
+            end
+        end
+        
+        -- سیستەمێ Shift Lock
+        if shiftLockEnabled and player.Character:FindFirstChild("HumanoidRootPart") then
+            local camera = workspace.CurrentCamera
+            local rootPart = player.Character.HumanoidRootPart
+            local lookVector = camera.CFrame.LookVector
+            local targetRotation = math.atan2(-lookVector.X, -lookVector.Z)
+            rootPart.CFrame = CFrame.new(rootPart.Position) * CFrame.Angles(0, targetRotation, 0)
+            camera.CameraType = Enum.CameraType.Custom
+        end
     end
 end)
