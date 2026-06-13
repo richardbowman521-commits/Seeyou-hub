@@ -263,3 +263,4 @@ SpectateButton.MouseButton1Click:Connect(function()
         SpectateButton.Text = "Spectate Player"
     end
 end)
+
