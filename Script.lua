@@ -5,37 +5,7 @@ local Title = Instance.new("TextLabel")
 local Sidebar = Instance.new("Frame")
 local ContentFrame = Instance.new("Frame")
 
-ScreenGui.Parent = game.CoreGui
-ScreenGui.ResetOnSpawn = false
-
-MainFrame.Name = "SeeyouHubV10"
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-MainFrame.Position = UDim2.new(0.25, 0, 0.2, 0)
-MainFrame.Size = UDim2.new(0, 500, 0, 320)
-MainFrame.Active = true
-MainFrame.Draggable = true
-
-TopBar.Parent = MainFrame
-TopBar.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-TopBar.Size = UDim2.new(0, 500, 0, 35)
-
-Title.Parent = TopBar
-Title.BackgroundTransparency = 1
-Title.Position = UDim2.new(0.03, 0, 0, 0)
-Title.Size = UDim2.new(0, 300, 0, 35)
-Title.Text = "SEEYOU HUB v10.7"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 16
-Title.Font = Enum.Font.SourceSansBold
-Title.TextXAlignment = Enum.TextXAlignment.Left
-
-Sidebar.Parent = MainFrame
-Sidebar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Sidebar.Position = UDim2.new(0, 0, 0, 35)
-Sidebar.Size = UDim2.new(0, 130, 0, 285)
-
-ContentFrame.Parent = MainFrame
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")⁠
 ContentFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 ContentFrame.Position = UDim2.new(0, 130, 0, 35)
 ContentFrame.Size = UDim2.new(0, 370, 0, 285)
