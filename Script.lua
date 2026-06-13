@@ -1,41 +1,51 @@
 local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-local CoreGui = game:GetService("CoreGui")
+local mouse = player:GetMouse()
+local flying = false
+local speed = 50 -- ل ڤێرێ دشێی لێزاتیا خۆ بگۆڕی
+local bv = nil
 
-local success, err = pcall(function()
-    -- 1. پاککرنا مێنیویا کەڤن
-    if playerGui:FindFirstChild("SeeyouHubV10") then playerGui.SeeyouHubV10:Destroy() end
-
-    -- 2. دروستکرنا ScreenGui
-    local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "SeeyouHubV10"
-    ScreenGui.Parent = playerGui -- ل ڤێرێ یا دڵنیایە
-    ScreenGui.ResetOnSpawn = false
-
-    -- 3. دروستکرنا MainFrame (هەمی کۆدێن تە یێن دی)
-    local MainFrame = Instance.new("Frame", ScreenGui)
-    MainFrame.Name = "MainFrame"
-    MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    MainFrame.Position = UDim2.new(0.25, 0, 0.2, 0)
-    MainFrame.Size = UDim2.new(0, 500, 0, 320)
-    MainFrame.Active = true
-    MainFrame.Draggable = true
-
-    -- ئەڤە هەمی کۆدێن تە یێن (TopBar, Sidebar, هتد...) ل ڤێرێ زێدە بکە
-    -- نموونە:
-    local TopBar = Instance.new("Frame", MainFrame)
-    TopBar.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-    TopBar.Size = UDim2.new(1, 0, 0, 35)
-    
-    local Title = Instance.new("TextLabel", TopBar)
-    Title.Text = "SEEYOU HUB v10.7"
-    Title.Size = UDim2.new(1, 0, 1, 0)
-    Title.BackgroundTransparency = 1
-    Title.TextColor3 = Color3.new(1, 1, 1)
-
-    -- کۆدێن تە یێن دی هەمیان ل ڤێرێ بێخە د ناڤ ڤی pcallـی دا
-end)
-
-if not success then
-    warn("Seeyou Hub Error: " .. err)
+-- دوگمەیا Fly (ئەگەر تە دڤێت ل سەر دوگمەیەکێ بیت)
+local function startFly()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character.HumanoidRootPart
+        flying = true
+        
+        bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.Velocity = Vector3.new(0, 0, 0)
+        bv.Parent = hrp
+        
+        local bg = Instance.new("BodyGyro")
+        bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+        bg.CFrame = hrp.CFrame
+        bg.Parent = hrp
+        
+        spawn(function()
+            while flying do
+                local cam = workspace.CurrentCamera
+                bv.Velocity = ((cam.CFrame.LookVector * (speed)) + (Vector3.new(0, 0, 0)))
+                bg.CFrame = cam.CFrame
+                task.wait()
+            end
+        end)
+    end
 end
+
+local function stopFly()
+    flying = false
+    if bv then bv:Destroy() end
+    if player.Character and player.Character.HumanoidRootPart:FindFirstChild("BodyGyro") then
+        player.Character.HumanoidRootPart.BodyGyro:Destroy()
+    end
+end
+
+-- ئەڤە کلیلێ ل ڤێ "Fly"ـێ دکەت (تەنێ ل سەر "F" ب دابنە)
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.F then
+        if not flying then
+            startFly()
+        else
+            stopFly()
+        end
+    end
+end)
