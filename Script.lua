@@ -89,40 +89,72 @@ Tab2Btn.MouseButton1Click:Connect(function()
     PlayersTab.Visible = true
 end)
 
-local SpeedButton = Instance.new("TextButton")
-SpeedButton.Parent = CharacterTab
-SpeedButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-SpeedButton.Position = UDim2.new(0.05, 0, 0.05, 0)
-SpeedButton.Size = UDim2.new(0, 150, 0, 40)
-SpeedButton.Text = "Speed X60"
-SpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+-- 1. خانەیا نووسینا خێراییێ (Speed)
+local SpeedInput = Instance.new("TextBox")
+SpeedInput.Parent = CharacterTab
+SpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+SpeedInput.Position = UDim2.new(0.05, 0, 0.05, 0)
+SpeedInput.Size = UDim2.new(0, 150, 0, 35)
+SpeedInput.Text = "Speed (Default: 16)"
+SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedInput.TextSize = 12
 
-SpeedButton.MouseButton1Click:Connect(function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = 60
+local SetSpeedButton = Instance.new("TextButton")
+SetSpeedButton.Parent = CharacterTab
+SetSpeedButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
+SetSpeedButton.Position = UDim2.new(0.52, 0, 0.05, 0)
+SetSpeedButton.Size = UDim2.new(0, 150, 0, 35)
+SetSpeedButton.Text = "Set Speed"
+SetSpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+SetSpeedButton.MouseButton1Click:Connect(function()
+    local speedValue = tonumber(SpeedInput.Text)
+    if speedValue and player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = speedValue
     end
 end)
 
-local JumpButton = Instance.new("TextButton")
-JumpButton.Parent = CharacterTab
-JumpButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-JumpButton.Position = UDim2.new(0.52, 0, 0.05, 0)
-JumpButton.Size = UDim2.new(0, 150, 0, 40)
-JumpButton.Text = "Jump Power 100"
-JumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+-- 2. خانەیا نووسینا بازدانێ (Jump Power)
+local JumpInput = Instance.new("TextBox")
+JumpInput.Parent = CharacterTab
+JumpInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+JumpInput.Position = UDim2.new(0.05, 0, 0.22, 0)
+JumpInput.Size = UDim2.new(0, 150, 0, 35)
+JumpInput.Text = "Jump (Default: 50)"
+JumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpInput.TextSize = 12
 
-JumpButton.MouseButton1Click:Connect(function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.JumpPower = 100
+local SetJumpButton = Instance.new("TextButton")
+SetJumpButton.Parent = CharacterTab
+SetJumpButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
+SetJumpButton.Position = UDim2.new(0.52, 0, 0.22, 0)
+SetJumpButton.Size = UDim2.new(0, 150, 0, 35)
+SetJumpButton.Text = "Set Jump"
+SetJumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+SetJumpButton.MouseButton1Click:Connect(function()
+    local jumpValue = tonumber(JumpInput.Text)
+    if jumpValue and player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.JumpPower = jumpValue
     end
 end)
+
+-- 3. خانەیا نووسینا خێراییا فڕینێ (Fly Speed)
+local FlyInput = Instance.new("TextBox")
+FlyInput.Parent = CharacterTab
+FlyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+FlyInput.Position = UDim2.new(0.05, 0, 0.39, 0)
+FlyInput.Size = UDim2.new(0, 150, 0, 35)
+FlyInput.Text = "Fly Speed (Default: 2)"
+FlyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlyInput.TextSize = 12
 
 local FlyButton = Instance.new("TextButton")
 FlyButton.Parent = CharacterTab
 FlyButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-FlyButton.Position = UDim2.new(0.05, 0, 0.25, 0)
-FlyButton.Size = UDim2.new(0, 150, 0, 40)
-FlyButton.Text = "Fly (Float)"
+FlyButton.Position = UDim2.new(0.52, 0, 0.39, 0)
+FlyButton.Size = UDim2.new(0, 150, 0, 35)
+FlyButton.Text = "Fly: OFF"
 FlyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 local flying = false
@@ -131,24 +163,32 @@ FlyButton.MouseButton1Click:Connect(function()
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         if not flying then
             flying = true
+            FlyButton.Text = "Fly: ON"
             bv = Instance.new("BodyVelocity")
             bv.Parent = player.Character.HumanoidRootPart
-            bv.Velocity = Vector3.new(0, 2, 0)
-            bv.MaxForce = Vector3.new(0, math.huge, 0)
-            FlyButton.Text = "Fly: ON"
+            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            
+            spawn(function()
+                while flying and player.Character and player.Character:FindFirstChild("HumanoidRootPart") do
+                    local flySpeed = tonumber(FlyInput.Text) or 2
+                    bv.Velocity = player.Character.Humanoid.MoveDirection * (flySpeed * 20) + Vector3.new(0, 2, 0)
+                    task.wait()
+                end
+            end)
         else
             flying = false
+            FlyButton.Text = "Fly: OFF"
             if bv then bv:Destroy() end
-            FlyButton.Text = "Fly (Float)"
         end
     end
 end)
 
+-- 4. دوگما غەیبکرنێ (Invisible)
 local InvisibilityButton = Instance.new("TextButton")
 InvisibilityButton.Parent = CharacterTab
 InvisibilityButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-InvisibilityButton.Position = UDim2.new(0.52, 0, 0.25, 0)
-InvisibilityButton.Size = UDim2.new(0, 150, 0, 40)
+InvisibilityButton.Position = UDim2.new(0.28, 0, 0.60, 0)
+InvisibilityButton.Size = UDim2.new(0, 150, 0, 35)
 InvisibilityButton.Text = "Invisible (Local)"
 InvisibilityButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -164,6 +204,7 @@ InvisibilityButton.MouseButton1Click:Connect(function()
     end
 end)
 
+-- بەشێ یاریزانێن دی (Players Target)
 local TargetBox = Instance.new("TextBox")
 TargetBox.Parent = PlayersTab
 TargetBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -222,88 +263,3 @@ SpectateButton.MouseButton1Click:Connect(function()
         SpectateButton.Text = "Spectate Player"
     end
 end)
-
--- دوگمەیا ئێکێ: ئەنیمەیشنا دۆڵفینی یا گشتی (یا بەری نوکە)
-local BangButton = Instance.new("TextButton")
-BangButton.Parent = PlayersTab
-BangButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-BangButton.Position = UDim2.new(0.05, 0, 0.45, 0)
-BangButton.Size = UDim2.new(0, 150, 0, 40)
-BangButton.Text = "Bang (Dolphin)"
-BangButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-local banging = false
-local bangLoop = nil
-
-BangButton.MouseButton1Click:Connect(function()
-    local targetName = TargetBox.Text:lower()
-    if not banging then
-        for _, p in pairs(game.Players:GetPlayers()) do
-            if p.Name:lower():sub(1, #targetName) == targetName and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                banging = true
-                BangButton.Text = "Stop Bang"
-                
-                bangLoop = game:GetService("RunService").Heartbeat:Connect(function()
-                    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                        local speed = 14
-                        local forwardBackward = math.sin(tick() * speed) * 0.9
-                        local upDown = math.cos(tick() * speed) * 0.6
-                        local rotationAngle = math.sin(tick() * speed) * 0.25
-
-                        player.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame 
-                            * CFrame.new(0, upDown - 0.2, 1.1 + forwardBackward) 
-                            * CFrame.Angles(rotationAngle, 0, 0)
-                    end
-                end)
-                break
-            end
-        end
-    else
-        banging = false
-        BangButton.Text = "Bang (Dolphin)"
-        if bangLoop then bangLoop:Disconnect() end
-    end
-end)
-
--- دوگمەیا دووێ یا نوو: لڤین ل هەمبەر دەڤ و سەرێ یاریزانی
-local MouthBangButton = Instance.new("TextButton")
-MouthBangButton.Parent = PlayersTab
-MouthBangButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-MouthBangButton.Position = UDim2.new(0.52, 0, 0.45, 0)
-MouthBangButton.Size = UDim2.new(0, 150, 0, 40)
-MouthBangButton.Text = "Bang (Mouth Target)"
-MouthBangButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-local mouthBanging = false
-local mouthLoop = nil
-
-MouthBangButton.MouseButton1Click:Connect(function()
-    local targetName = TargetBox.Text:lower()
-    if not mouthBanging then
-        for _, p in pairs(game.Players:GetPlayers()) do
-            if p.Name:lower():sub(1, #targetName) == targetName and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                mouthBanging = true
-                MouthBangButton.Text = "Stop Mouth"
-                
-                mouthLoop = game:GetService("RunService").Heartbeat:Connect(function()
-                    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                        local speed = 16 -- خێراییەکا گونجای بۆ ڤێ لڤینێ
-                        -- لڤینا چوون پێش و پاش ل بەردەم سەر و دەڤێ یاریزانێ دی
-                        local moveInAndOut = math.sin(tick() * speed) * 0.7 
-                        
-                        -- دانانا جهێ کاراکتەری ڕێک ل بەردەم سەرێ یاریزانی (گۆڕینی دووری و بەرزی بۆ هەمبەر دەڤی)
-                        player.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame 
-                            * CFrame.new(0, 0.8, -1.0 - moveInAndOut) 
-                            * CFrame.Angles(0, math.pi, 0) -- زڤڕاندنا کاراکتەری بۆ هندێ ڕو ب ڕو بن
-                    end
-                end)
-                break
-            end
-        end
-    else
-        mouthBanging = false
-        MouthBangButton.Text = "Bang (Mouth Target)"
-        if mouthLoop then mouthLoop:Disconnect() end
-    end
-end)
-
