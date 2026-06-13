@@ -24,7 +24,7 @@ Title.Parent = TopBar
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0.03, 0, 0, 0)
 Title.Size = UDim2.new(0, 300, 0, 35)
-Title.Text = "SEEYOU HUB v10.2"
+Title.Text = "SEEYOU HUB v10.4"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.Font = Enum.Font.SourceSansBold
@@ -89,7 +89,7 @@ Tab2Btn.MouseButton1Click:Connect(function()
     PlayersTab.Visible = true
 end)
 
--- 1. خانەیا نووسینا خێراییێ
+-- 1. خێرایی
 local SpeedInput = Instance.new("TextBox")
 SpeedInput.Parent = CharacterTab
 SpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -119,7 +119,7 @@ SetSpeedButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- 2. خانەیا نووسینا بازدانێ (تێکەڵاوا JumpPower و JumpHeight ب لۆپەکا هێزدار)
+-- 2. بازدان
 local JumpInput = Instance.new("TextBox")
 JumpInput.Parent = CharacterTab
 JumpInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -152,7 +152,7 @@ SetJumpButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- 3. خانەیا خێراییا فڕینێ
+-- 3. فڕین
 local FlyInput = Instance.new("TextBox")
 FlyInput.Parent = CharacterTab
 FlyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -197,7 +197,7 @@ FlyButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- 4. دوگمەیا نوو یا قفڵکرنا کامێرێ (Shift Lock بۆ ئایپاد و مۆبایلێ)
+-- 4. چاککرنا بنەڕەتی یا Shift Lock (سیستەمێ فەرمی و سۆک یێ ڕۆبلۆکس)
 local ShiftLockButton = Instance.new("TextButton")
 ShiftLockButton.Parent = CharacterTab
 ShiftLockButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
@@ -208,20 +208,41 @@ ShiftLockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ShiftLockButton.TextSize = 13
 
 local shiftLockEnabled = false
+
+-- دروستکردنا نیشانەکا بچووک (Crosshair) بۆ ناڤەڕاستا شاشێ کاتێ لۆک دبیت
+local CenterDot = Instance.new("Frame")
+CenterDot.Size = UDim2.new(0, 6, 0, 6)
+CenterDot.Position = UDim2.new(0.5, -3, 0.5, -3)
+CenterDot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CenterDot.BackgroundTransparency = 0.3
+CenterDot.Visible = false
+CenterDot.Parent = ScreenGui
+
 ShiftLockButton.MouseButton1Click:Connect(function()
+    local camera = workspace.CurrentCamera
     if not shiftLockEnabled then
         shiftLockEnabled = true
         ShiftLockButton.Text = "Shift Lock: ON"
-        player.DevEnableMouseLock = true
+        CenterDot.Visible = true
+        
+        -- بەکارئینانا سیستەمێ فەرمی یێ MouseLock یێ ڕۆبلۆکس بۆ لڤینا سۆک
+        pcall(function()
+            player.DevEnableMouseLock = true
+            game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.LockCenter
+        end)
     else
         shiftLockEnabled = false
         ShiftLockButton.Text = "Shift Lock: OFF"
-        player.DevEnableMouseLock = false
-        workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+        CenterDot.Visible = false
+        pcall(function()
+            player.DevEnableMouseLock = false
+            game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.Default
+            camera.CameraType = Enum.CameraType.Custom
+        end)
     end
 end)
 
--- ٥. دوگمەیا غەیبکرنێ (Invisible)
+-- ٥. غەیبکرن
 local InvisibilityButton = Instance.new("TextButton")
 InvisibilityButton.Parent = CharacterTab
 InvisibilityButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
@@ -242,8 +263,8 @@ InvisibilityButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- لۆپەکا بەردەوام بۆ قفڵکرنا کامێرێ د کاتی چالاککرنێ دا و پاراستنا بازدانێ
-game:GetService("RunService").Heartbeat:Connect(function()
+-- لۆپ بۆ پاراستنا خێرایی، بازدان، و ئاڕاستەیا کاراکتەری دگەل کامێرێ
+game:GetService("RunService").RenderStepped:Connect(function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         local hum = player.Character.Humanoid
         if customSpeed then hum.WalkSpeed = customSpeed end
@@ -251,16 +272,20 @@ game:GetService("RunService").Heartbeat:Connect(function()
             hum.UseJumpPower = false
             hum.JumpHeight = customJump
         end
-    end
-    
-    -- ئەگەر Shift Lock کارا بوو، دێ کامێرێ ئێخیته بەرامبەر کاراکتەری
-    if shiftLockEnabled and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local cam = workspace.CurrentCamera
-        cam.CameraType = Enum.CameraType.Scriptable
-        local rootPart = player.Character.HumanoidRootPart
-        local startCFrame = CFrame.new(rootPart.Position) * CFrame.Angles(0, math.rad(rootPart.Orientation.Y), 0)
-        local cameraCFrame = startCFrame * CFrame.new(2, 3, 10) -- دووراتی و بلندیا کامێرێ
-        cam.CFrame = CFrame.new(cameraCFrame.p, rootPart.Position + Vector3.new(0, 2, 0))
+        
+        -- ئەگەر Shift Lock کارا بوو، دێ کاراکتەری ل سەر ئاڕاستەیا کامێرێ ڕێک ئێخیت ب کەیفا تە بێ لۆک کرنا زوومێ
+        if shiftLockEnabled and player.Character:FindFirstChild("HumanoidRootPart") then
+            local camera = workspace.CurrentCamera
+            local rootPart = player.Character.HumanoidRootPart
+            local lookVector = camera.CFrame.LookVector
+            
+            -- سوڕاندنا کاراکتەری بەرەڤ جهێ کامێرێ سەیڕ دکەت، بەس ڕێ ددت کامێرە زووم ببیت
+            local targetRotation = math.atan2(-lookVector.X, -lookVector.Z)
+            rootPart.CFrame = CFrame.new(rootPart.Position) * CFrame.Angles(0, targetRotation, 0)
+            
+            -- پاراستنا زوومێ و سۆکییا کامێرێ
+            camera.CameraType = Enum.CameraType.Custom
+        end
     end
 end)
 
