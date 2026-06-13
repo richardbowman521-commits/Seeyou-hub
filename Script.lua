@@ -24,7 +24,7 @@ Title.Parent = TopBar
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0.03, 0, 0, 0)
 Title.Size = UDim2.new(0, 300, 0, 35)
-Title.Text = "SEEYOU HUB v10.0"
+Title.Text = "SEEYOU HUB v10.1"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.Font = Enum.Font.SourceSansBold
@@ -89,71 +89,100 @@ Tab2Btn.MouseButton1Click:Connect(function()
     PlayersTab.Visible = true
 end)
 
--- 1. خانەیا نووسینا خێراییێ (Speed)
+-- 1. ڕێکخستنا خانەیا Speed
 local SpeedInput = Instance.new("TextBox")
 SpeedInput.Parent = CharacterTab
 SpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 SpeedInput.Position = UDim2.new(0.05, 0, 0.05, 0)
-SpeedInput.Size = UDim2.new(0, 150, 0, 35)
+SpeedInput.Size = UDim2.new(0, 170, 0, 35)
 SpeedInput.Text = "Speed (Default: 16)"
 SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedInput.TextSize = 12
+SpeedInput.ClearTextOnFocus = true
 
 local SetSpeedButton = Instance.new("TextButton")
 SetSpeedButton.Parent = CharacterTab
 SetSpeedButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-SetSpeedButton.Position = UDim2.new(0.52, 0, 0.05, 0)
-SetSpeedButton.Size = UDim2.new(0, 150, 0, 35)
+SetSpeedButton.Position = UDim2.new(0.55, 0, 0.05, 0)
+SetSpeedButton.Size = UDim2.new(0, 140, 0, 35)
 SetSpeedButton.Text = "Set Speed"
 SetSpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
+local customSpeed = nil
 SetSpeedButton.MouseButton1Click:Connect(function()
     local speedValue = tonumber(SpeedInput.Text)
-    if speedValue and player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = speedValue
+    if speedValue then
+        customSpeed = speedValue
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.WalkSpeed = speedValue
+        end
     end
 end)
 
--- 2. خانەیا نووسینا بازدانێ (Jump Power)
+-- 2. ڕێکخستنا خانەیا Jump (چاککرنا بنەڕەتی بۆ تێکەڵاوا JumpPower و JumpHeight)
 local JumpInput = Instance.new("TextBox")
 JumpInput.Parent = CharacterTab
 JumpInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-JumpInput.Position = UDim2.new(0.05, 0, 0.22, 0)
-JumpInput.Size = UDim2.new(0, 150, 0, 35)
-JumpInput.Text = "Jump (Default: 50)"
+JumpInput.Position = UDim2.new(0.05, 0, 0.25, 0)
+JumpInput.Size = UDim2.new(0, 170, 0, 35)
+JumpInput.Text = "Jump Height (e.g. 15)"
 JumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 JumpInput.TextSize = 12
+JumpInput.ClearTextOnFocus = true
 
 local SetJumpButton = Instance.new("TextButton")
 SetJumpButton.Parent = CharacterTab
 SetJumpButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-SetJumpButton.Position = UDim2.new(0.52, 0, 0.22, 0)
-SetJumpButton.Size = UDim2.new(0, 150, 0, 35)
+SetJumpButton.Position = UDim2.new(0.55, 0, 0.25, 0)
+SetJumpButton.Size = UDim2.new(0, 140, 0, 35)
 SetJumpButton.Text = "Set Jump"
 SetJumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
+local customJump = nil
 SetJumpButton.MouseButton1Click:Connect(function()
     local jumpValue = tonumber(JumpInput.Text)
-    if jumpValue and player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.JumpPower = jumpValue
+    if jumpValue then
+        customJump = jumpValue
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            local hum = player.Character.Humanoid
+            -- نەچارکرنا یاریێ بۆ کارپێکرنا هەردوو شێوازان ب شێوەیەکێ توند
+            hum.UseJumpPower = false
+            hum.JumpHeight = jumpValue
+            hum.JumpPower = jumpValue * 7 -- ئەگەر یاریێ هێشتا پاوەر بەکارئینا، دێ زێدە بیت
+        end
     end
 end)
 
--- 3. خانەیا نووسینا خێراییا فڕینێ (Fly Speed)
+-- لۆپەک بۆ پاراستنا خێرایی و بازدانێ هەر دەمێ کاراکتەر سپاون دبیت یان دهێتە گۆڕین
+game:GetService("RunService").Heartbeat:Connect(function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        local hum = player.Character.Humanoid
+        if customSpeed then
+            hum.WalkSpeed = customSpeed
+        end
+        if customJump then
+            hum.UseJumpPower = false
+            hum.JumpHeight = customJump
+        end
+    end
+end)
+
+-- 3. ڕێکخستنا خانەیا Fly Speed
 local FlyInput = Instance.new("TextBox")
 FlyInput.Parent = CharacterTab
 FlyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-FlyInput.Position = UDim2.new(0.05, 0, 0.39, 0)
-FlyInput.Size = UDim2.new(0, 150, 0, 35)
+FlyInput.Position = UDim2.new(0.05, 0, 0.45, 0)
+FlyInput.Size = UDim2.new(0, 170, 0, 35)
 FlyInput.Text = "Fly Speed (Default: 2)"
 FlyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 FlyInput.TextSize = 12
+FlyInput.ClearTextOnFocus = true
 
 local FlyButton = Instance.new("TextButton")
 FlyButton.Parent = CharacterTab
 FlyButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-FlyButton.Position = UDim2.new(0.52, 0, 0.39, 0)
-FlyButton.Size = UDim2.new(0, 150, 0, 35)
+FlyButton.Position = UDim2.new(0.55, 0, 0.45, 0)
+FlyButton.Size = UDim2.new(0, 140, 0, 35)
 FlyButton.Text = "Fly: OFF"
 FlyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -183,11 +212,11 @@ FlyButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- 4. دوگما غەیبکرنێ (Invisible)
+-- 4. دوگما Invisible
 local InvisibilityButton = Instance.new("TextButton")
 InvisibilityButton.Parent = CharacterTab
 InvisibilityButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-InvisibilityButton.Position = UDim2.new(0.28, 0, 0.60, 0)
+InvisibilityButton.Position = UDim2.new(0.3, 0, 0.68, 0)
 InvisibilityButton.Size = UDim2.new(0, 150, 0, 35)
 InvisibilityButton.Text = "Invisible (Local)"
 InvisibilityButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -204,7 +233,7 @@ InvisibilityButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- بەشێ یاریزانێن دی (Players Target)
+-- بەشێ Players Target
 local TargetBox = Instance.new("TextBox")
 TargetBox.Parent = PlayersTab
 TargetBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -213,6 +242,7 @@ TargetBox.Size = UDim2.new(0, 315, 0, 40)
 TargetBox.Text = "Enter Player Name Here"
 TargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 TargetBox.TextSize = 14
+TargetBox.ClearTextOnFocus = true
 
 local TeleportButton = Instance.new("TextButton")
 TeleportButton.Parent = PlayersTab
@@ -263,4 +293,3 @@ SpectateButton.MouseButton1Click:Connect(function()
         SpectateButton.Text = "Spectate Player"
     end
 end)
-
