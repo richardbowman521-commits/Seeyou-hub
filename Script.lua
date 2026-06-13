@@ -3,11 +3,9 @@ print("1 - سکریپت دەست پێ کر")
 -- ل ناڤا سکریپتا خۆ، ل جهێن جودا (وەک پشتی MainFrame و پشتی TopBar)
 print("2 - مێنیو هاتە چێکرن")
 -- دەستپێکا پاراستنێ
-local success, err = pcall(function()
-
-    -- پاککرنا مێنیویا کەڤن
+local success, err = pcall(
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    local existing = playerGui:FindFirstChild("SeeyouHubV10")
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     if existing then existing:Destroy() end
 
     -- (ل ڤێرێ هەمی سکریپتا خۆ یا کەڤن پەیست بکە)
