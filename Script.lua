@@ -1,3 +1,4 @@
+local success, err = pcall(function()
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local TopBar = Instance.new("Frame")
@@ -420,7 +421,10 @@ game:GetService("RunService").RenderStepped:Connect(function()
             local lookVector = camera.CFrame.LookVector
             local targetRotation = math.atan2(-lookVector.X, -lookVector.Z)
             rootPart.CFrame = CFrame.new(rootPart.Position) * CFrame.Angles(0, targetRotation, 0)
-            camera.CameraType = Enum.CameraType.Custom
+            camera.CameraType = Enum.CameraType.Custom    camera.CameraType = Enum.CameraType.Custom
+    end
+end)
+
         end
     end
 end)
