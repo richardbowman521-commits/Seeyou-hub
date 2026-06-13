@@ -24,7 +24,7 @@ Title.Parent = TopBar
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0.03, 0, 0, 0)
 Title.Size = UDim2.new(0, 300, 0, 35)
-Title.Text = "SEEYOU HUB v10.5"
+Title.Text = "SEEYOU HUB v10.6"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.Font = Enum.Font.SourceSansBold
@@ -255,8 +255,8 @@ TargetBox.ClearTextOnFocus = true
 local TeleportButton = Instance.new("TextButton")
 TeleportButton.Parent = PlayersTab
 TeleportButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-TeleportButton.Position = UDim2.new(0.05, 0, 0.23, 0)
-TeleportButton.Size = UDim2.new(0, 150, 0, 35)
+TeleportButton.Position = UDim2.new(0.05, 0, 0.25, 0)
+TeleportButton.Size = UDim2.new(0, 150, 0, 40)
 TeleportButton.Text = "Teleport To"
 TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -275,8 +275,8 @@ end)
 local SpectateButton = Instance.new("TextButton")
 SpectateButton.Parent = PlayersTab
 SpectateButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-SpectateButton.Position = UDim2.new(0.52, 0, 0.23, 0)
-SpectateButton.Size = UDim2.new(0, 150, 0, 35)
+SpectateButton.Position = UDim2.new(0.52, 0, 0.25, 0)
+SpectateButton.Size = UDim2.new(0, 150, 0, 40)
 SpectateButton.Text = "Spectate Player"
 SpectateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -302,44 +302,7 @@ SpectateButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- لڤاندنا دوگمەیێن Bang و Unbang بۆ ناڤ مێنیوێ
-local BangButton = Instance.new("TextButton")
-BangButton.Parent = PlayersTab
-BangButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0) -- ڕەنگێ سۆر
-BangButton.Position = UDim2.new(0.05, 0, 0.42, 0)
-BangButton.Size = UDim2.new(0, 150, 0, 35)
-BangButton.Text = "Bang Player"
-BangButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-local UnbangButton = Instance.new("TextButton")
-UnbangButton.Parent = PlayersTab
-UnbangButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-UnbangButton.Position = UDim2.new(0.52, 0, 0.42, 0)
-UnbangButton.Size = UDim2.new(0, 150, 0, 35)
-UnbangButton.Text = "Unbang"
-UnbangButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-local bamping = false
-local bangTarget = nil
-
-BangButton.MouseButton1Click:Connect(function()
-    local targetName = TargetBox.Text:lower()
-    for _, p in pairs(game.Players:GetPlayers()) do
-        if p.Name:lower():sub(1, #targetName) == targetName and p ~= player then
-            bangTarget = p
-            bamping = true
-            break
-        end
-    end
-end)
-
-UnbangButton.MouseButton1Click:Connect(function()
-    bamping = false
-    bangTarget = nil
-end)
-
 -- ==================== LOOPS SYSTEM ====================
-local bangState = true
 game:GetService("RunService").RenderStepped:Connect(function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         local hum = player.Character.Humanoid
@@ -347,25 +310,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
         if customJump then
             hum.UseJumpPower = false
             hum.JumpHeight = customJump
-        end
-        
-        -- سیستەمێ تێکدانا کاراکتەری (Bang Loop)
-        if bamping and bangTarget and bangTarget.Character and bangTarget.Character:FindFirstChild("HumanoidRootPart") then
-            local root = player.Character:FindFirstChild("HumanoidRootPart")
-            local targetRoot = bangTarget.Character.HumanoidRootPart
-            if root then
-                hum.PlatformStand = true
-                if bangState then
-                    root.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 0.75)
-                else
-                    root.CFrame = targetRoot.CFrame * CFrame.new(0, 0, -0.5)
-                end
-                bangState = not bangState
-            end
-        else
-            if hum.PlatformStand and not bamping then
-                hum.PlatformStand = false
-            end
         end
         
         -- سیستەمێ Shift Lock
