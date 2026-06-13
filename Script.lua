@@ -24,7 +24,7 @@ Title.Parent = TopBar
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0.03, 0, 0, 0)
 Title.Size = UDim2.new(0, 300, 0, 35)
-Title.Text = "SEEYOU HUB v10.6"
+Title.Text = "SEEYOU HUB v10.7"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.Font = Enum.Font.SourceSansBold
@@ -184,8 +184,8 @@ end)
 local ShiftLockButton = Instance.new("TextButton")
 ShiftLockButton.Parent = CharacterTab
 ShiftLockButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-ShiftLockButton.Position = UDim2.new(0.05, 0, 0.58, 0)
-ShiftLockButton.Size = UDim2.new(0, 170, 0, 35)
+ShiftLockButton.Position = UDim2.new(0.05, 0, 0.56, 0)
+ShiftLockButton.Size = UDim2.new(0, 170, 0, 32)
 ShiftLockButton.Text = "Shift Lock: OFF"
 ShiftLockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ShiftLockButton.TextSize = 13
@@ -224,8 +224,8 @@ end)
 local InvisibilityButton = Instance.new("TextButton")
 InvisibilityButton.Parent = CharacterTab
 InvisibilityButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-InvisibilityButton.Position = UDim2.new(0.55, 0, 0.58, 0)
-InvisibilityButton.Size = UDim2.new(0, 140, 0, 35)
+InvisibilityButton.Position = UDim2.new(0.55, 0, 0.56, 0)
+InvisibilityButton.Size = UDim2.new(0, 140, 0, 32)
 InvisibilityButton.Text = "Invisible (Local)"
 InvisibilityButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -239,6 +239,107 @@ InvisibilityButton.MouseButton1Click:Connect(function()
             end
         end
     end
+end)
+
+-- لڤاندنا دوگمەیا ESP بۆ خوارێ د بەشێ Character دا
+local EspButton = Instance.new("TextButton")
+EspButton.Parent = CharacterTab
+EspButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
+EspButton.Position = UDim2.new(0.05, 0, 0.73, 0)
+EspButton.Size = UDim2.new(0, 325, 0, 35)
+EspButton.Text = "ESP: OFF"
+EspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspButton.TextSize = 14
+
+local espEnabled = false
+local espFolder = Instance.new("Folder")
+espFolder.Name = "SeeyouESP"
+espFolder.Parent = game.CoreGui
+
+local function createESP(p)
+    if p == player then return end
+    p.CharacterAdded:Connect(function(char)
+        if not espEnabled then return end
+        task.wait(0.5)
+        
+        if char:FindFirstChild("HumanoidRootPart") and not espFolder:FindFirstChild(p.Name) then
+            local box = Instance.new("BoxHandleAdornment")
+            box.Name = p.Name
+            box.Size = Vector3.new(4, 6, 4)
+            box.Color3 = Color3.fromRGB(255, 0, 0) -- ڕەنگێ سۆر بۆ چوارچۆڤەی
+            box.AlwaysOnTop = true
+            box.ZIndex = 10
+            box.Adornee = char.HumanoidRootPart
+            box.Transparency = 0.5
+            box.Parent = espFolder
+            
+            local bb = Instance.new("BillboardGui")
+            bb.Name = p.Name .. "_Name"
+            bb.Size = UDim2.new(0, 200, 0, 50)
+            bb.AlwaysOnTop = true
+            bb.StudsOffset = Vector3.new(0, 3.5, 0)
+            bb.Adornee = char.HumanoidRootPart
+            bb.Parent = espFolder
+            
+            local tl = Instance.new("TextLabel")
+            tl.Size = UDim2.new(1, 0, 1, 0)
+            tl.BackgroundTransparency = 1
+            tl.Text = p.Name
+            tl.TextColor3 = Color3.fromRGB(255, 255, 255)
+            tl.TextSize = 12
+            tl.Font = Enum.Font.SourceSansBold
+            tl.Parent = bb
+        end
+    end)
+end
+
+EspButton.MouseButton1Click:Connect(function()
+    if not espEnabled then
+        espEnabled = true
+        EspButton.Text = "ESP: ON"
+        
+        for _, p in pairs(game.Players:GetPlayers()) do
+            if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local char = p.Character
+                local box = Instance.new("BoxHandleAdornment")
+                box.Name = p.Name
+                box.Size = Vector3.new(4, 6, 4)
+                box.Color3 = Color3.fromRGB(255, 0, 0)
+                box.AlwaysOnTop = true
+                box.ZIndex = 10
+                box.Adornee = char.HumanoidRootPart
+                box.Transparency = 0.5
+                box.Parent = espFolder
+                
+                local bb = Instance.new("BillboardGui")
+                bb.Name = p.Name .. "_Name"
+                bb.Size = UDim2.new(0, 200, 0, 50)
+                bb.AlwaysOnTop = true
+                bb.StudsOffset = Vector3.new(0, 3.5, 0)
+                bb.Adornee = char.HumanoidRootPart
+                bb.Parent = espFolder
+                
+                local tl = Instance.new("TextLabel")
+                tl.Size = UDim2.new(1, 0, 1, 0)
+                tl.BackgroundTransparency = 1
+                tl.Text = p.Name
+                tl.TextColor3 = Color3.fromRGB(255, 255, 255)
+                tl.TextSize = 12
+                tl.Font = Enum.Font.SourceSansBold
+                tl.Parent = bb
+            end
+        end
+    else
+        espEnabled = false
+        EspButton.Text = "ESP: OFF"
+        espFolder:ClearAllChildren()
+    end
+end)
+
+game.Players.PlayerAdded:Connect(createESP)
+game.Players.PlayerRemoving:Connect(function(p)
+    if espFolder:FindFirstChild(p.Name) then espFolder[p.Name]:Destroy() end
+    if espFolder:FindFirstChild(p.Name .. "_Name") then espFolder[p.Name .. "_Name"]:Destroy() end
 end)
 
 -- ==================== PLAYERS TARGET TAB ====================
