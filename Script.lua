@@ -24,7 +24,7 @@ Title.Parent = TopBar
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0.03, 0, 0, 0)
 Title.Size = UDim2.new(0, 300, 0, 35)
-Title.Text = "SEEYOU HUB v10.1"
+Title.Text = "SEEYOU HUB v10.2"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.Font = Enum.Font.SourceSansBold
@@ -89,7 +89,7 @@ Tab2Btn.MouseButton1Click:Connect(function()
     PlayersTab.Visible = true
 end)
 
--- 1. ڕێکخستنا خانەیا Speed
+-- 1. خانەیا نووسینا خێراییێ
 local SpeedInput = Instance.new("TextBox")
 SpeedInput.Parent = CharacterTab
 SpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -119,11 +119,11 @@ SetSpeedButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- 2. ڕێکخستنا خانەیا Jump (چاککرنا بنەڕەتی بۆ تێکەڵاوا JumpPower و JumpHeight)
+-- 2. خانەیا نووسینا بازدانێ (تێکەڵاوا JumpPower و JumpHeight ب لۆپەکا هێزدار)
 local JumpInput = Instance.new("TextBox")
 JumpInput.Parent = CharacterTab
 JumpInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-JumpInput.Position = UDim2.new(0.05, 0, 0.25, 0)
+JumpInput.Position = UDim2.new(0.05, 0, 0.22, 0)
 JumpInput.Size = UDim2.new(0, 170, 0, 35)
 JumpInput.Text = "Jump Height (e.g. 15)"
 JumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -133,7 +133,7 @@ JumpInput.ClearTextOnFocus = true
 local SetJumpButton = Instance.new("TextButton")
 SetJumpButton.Parent = CharacterTab
 SetJumpButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-SetJumpButton.Position = UDim2.new(0.55, 0, 0.25, 0)
+SetJumpButton.Position = UDim2.new(0.55, 0, 0.22, 0)
 SetJumpButton.Size = UDim2.new(0, 140, 0, 35)
 SetJumpButton.Text = "Set Jump"
 SetJumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -145,33 +145,18 @@ SetJumpButton.MouseButton1Click:Connect(function()
         customJump = jumpValue
         if player.Character and player.Character:FindFirstChild("Humanoid") then
             local hum = player.Character.Humanoid
-            -- نەچارکرنا یاریێ بۆ کارپێکرنا هەردوو شێوازان ب شێوەیەکێ توند
             hum.UseJumpPower = false
             hum.JumpHeight = jumpValue
-            hum.JumpPower = jumpValue * 7 -- ئەگەر یاریێ هێشتا پاوەر بەکارئینا، دێ زێدە بیت
+            hum.JumpPower = jumpValue * 7
         end
     end
 end)
 
--- لۆپەک بۆ پاراستنا خێرایی و بازدانێ هەر دەمێ کاراکتەر سپاون دبیت یان دهێتە گۆڕین
-game:GetService("RunService").Heartbeat:Connect(function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        local hum = player.Character.Humanoid
-        if customSpeed then
-            hum.WalkSpeed = customSpeed
-        end
-        if customJump then
-            hum.UseJumpPower = false
-            hum.JumpHeight = customJump
-        end
-    end
-end)
-
--- 3. ڕێکخستنا خانەیا Fly Speed
+-- 3. خانەیا خێراییا فڕینێ
 local FlyInput = Instance.new("TextBox")
 FlyInput.Parent = CharacterTab
 FlyInput.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-FlyInput.Position = UDim2.new(0.05, 0, 0.45, 0)
+FlyInput.Position = UDim2.new(0.05, 0, 0.39, 0)
 FlyInput.Size = UDim2.new(0, 170, 0, 35)
 FlyInput.Text = "Fly Speed (Default: 2)"
 FlyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -181,7 +166,7 @@ FlyInput.ClearTextOnFocus = true
 local FlyButton = Instance.new("TextButton")
 FlyButton.Parent = CharacterTab
 FlyButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-FlyButton.Position = UDim2.new(0.55, 0, 0.45, 0)
+FlyButton.Position = UDim2.new(0.55, 0, 0.39, 0)
 FlyButton.Size = UDim2.new(0, 140, 0, 35)
 FlyButton.Text = "Fly: OFF"
 FlyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -212,12 +197,36 @@ FlyButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- 4. دوگما Invisible
+-- 4. دوگمەیا نوو یا قفڵکرنا کامێرێ (Shift Lock بۆ ئایپاد و مۆبایلێ)
+local ShiftLockButton = Instance.new("TextButton")
+ShiftLockButton.Parent = CharacterTab
+ShiftLockButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
+ShiftLockButton.Position = UDim2.new(0.05, 0, 0.58, 0)
+ShiftLockButton.Size = UDim2.new(0, 170, 0, 35)
+ShiftLockButton.Text = "Shift Lock: OFF"
+ShiftLockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ShiftLockButton.TextSize = 13
+
+local shiftLockEnabled = false
+ShiftLockButton.MouseButton1Click:Connect(function()
+    if not shiftLockEnabled then
+        shiftLockEnabled = true
+        ShiftLockButton.Text = "Shift Lock: ON"
+        player.DevEnableMouseLock = true
+    else
+        shiftLockEnabled = false
+        ShiftLockButton.Text = "Shift Lock: OFF"
+        player.DevEnableMouseLock = false
+        workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+    end
+end)
+
+-- ٥. دوگمەیا غەیبکرنێ (Invisible)
 local InvisibilityButton = Instance.new("TextButton")
 InvisibilityButton.Parent = CharacterTab
 InvisibilityButton.BackgroundColor3 = Color3.fromRGB(130, 0, 180)
-InvisibilityButton.Position = UDim2.new(0.3, 0, 0.68, 0)
-InvisibilityButton.Size = UDim2.new(0, 150, 0, 35)
+InvisibilityButton.Position = UDim2.new(0.55, 0, 0.58, 0)
+InvisibilityButton.Size = UDim2.new(0, 140, 0, 35)
 InvisibilityButton.Text = "Invisible (Local)"
 InvisibilityButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
@@ -230,6 +239,28 @@ InvisibilityButton.MouseButton1Click:Connect(function()
                 part.Handle.Transparency = 1
             end
         end
+    end
+end)
+
+-- لۆپەکا بەردەوام بۆ قفڵکرنا کامێرێ د کاتی چالاککرنێ دا و پاراستنا بازدانێ
+game:GetService("RunService").Heartbeat:Connect(function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        local hum = player.Character.Humanoid
+        if customSpeed then hum.WalkSpeed = customSpeed end
+        if customJump then
+            hum.UseJumpPower = false
+            hum.JumpHeight = customJump
+        end
+    end
+    
+    -- ئەگەر Shift Lock کارا بوو، دێ کامێرێ ئێخیته بەرامبەر کاراکتەری
+    if shiftLockEnabled and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local cam = workspace.CurrentCamera
+        cam.CameraType = Enum.CameraType.Scriptable
+        local rootPart = player.Character.HumanoidRootPart
+        local startCFrame = CFrame.new(rootPart.Position) * CFrame.Angles(0, math.rad(rootPart.Orientation.Y), 0)
+        local cameraCFrame = startCFrame * CFrame.new(2, 3, 10) -- دووراتی و بلندیا کامێرێ
+        cam.CFrame = CFrame.new(cameraCFrame.p, rootPart.Position + Vector3.new(0, 2, 0))
     end
 end)
 
