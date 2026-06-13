@@ -1,20 +1,26 @@
--- Seeyou Hub V10.7 - Fixed Version
 local success, err = pcall(function()
-    
-    -- 1. پاککرنا مێنیویا کەڤن (دا دوو مێنیو ل سەر ئێک نەبن)
+    -- ڤەگوهاستنا مێنیویێ بۆ PlayerGui (جهێ دروست)
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    
+    -- پاککرنا مێنیویا کەڤن ئەگەر هەبیت
     local existing = playerGui:FindFirstChild("SeeyouHubV10")
     if existing then existing:Destroy() end
 
-    -- 2. دروستکرنا مێنیویا نوو ل جهێ دروست (PlayerGui)
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "SeeyouHubV10"
-    ScreenGui.Parent = playerGui -- ل ڤێرێ ب گۆڕی بۆ PlayerGui
+    ScreenGui.Parent = playerGui 
     ScreenGui.ResetOnSpawn = false
 
-    -- باقی کۆدێن تە ل ڤێرێ بێخە (هەمی سکریپتا تە یا دی ل ڤێرێ دمینیت)
-    -- ... (کۆدێن خۆ ل ڤێرێ پەیست بکە) ...
-    
+    -- ڤێرێ هەمی کۆدێن خۆ یێن (MainFrame, TopBar, هتد...) ل دووڤ ئێک دابنە
+    -- ئەڤە نموونەکا بچووکە:
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Parent = ScreenGui
+    MainFrame.Size = UDim2.new(0, 500, 0, 320)
+    MainFrame.Position = UDim2.new(0.25, 0, 0.2, 0)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+    MainFrame.Visible = true -- دڤێت یا true بیت
 end)
 
 if not success then
